@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "author": {
-    "name": "harmoinai",
+    "name": "harmoinai"
   },
   "dependencies": {
     "apexcharts": "^3.41.0",
