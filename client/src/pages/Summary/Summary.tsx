@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 const Summary: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<'text' | 'video'>('text');
   const [userFeeling, setUserFeeling] = useState('');
   const [inputType, setInputType] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
@@ -84,19 +85,33 @@ const Summary: React.FC = () => {
   };
 
   return (
-    <>
-      <div className="mt-8 py-6">
-        {/* Textarea Fields */}
-        <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-          <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
-            <h3 className="font-medium text-black dark:text-white">
-              Enter text to summarize
-            </h3>
-          </div>
-          <div className="flex flex-col gap-5.5 p-6.5">
-            
-            <div>
-     
+    <div className="mt-8 py-6">
+      {/* Tab Navigation */}
+      <div className="flex mb-4 border-b border-stroke dark:border-strokedark">
+        <button
+          onClick={() => setActiveTab('text')}
+          className={`py-2 px-4 ${activeTab === 'text' ? 'text-primary border-primary border-b-2' : 'text-gray-600 dark:text-gray-300'}`}
+        >
+          Text Summary
+        </button>
+        <button
+          onClick={() => setActiveTab('video')}
+          className={`py-2 px-4 ${activeTab === 'video' ? 'text-primary border-primary border-b-2' : 'text-gray-600 dark:text-gray-300'}`}
+        >
+          Video Summary
+        </button>
+      </div>
+
+      {/* Content for each tab */}
+      {activeTab === 'text' && (
+        <div className="mt-4">
+          <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+            <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
+              <h3 className="font-medium text-black dark:text-white">
+                Enter text to summarize
+              </h3>
+            </div>
+            <div className="flex flex-col gap-5.5 p-6.5">
               <textarea
                 rows={6}
                 value={textInput}
@@ -104,64 +119,58 @@ const Summary: React.FC = () => {
                 placeholder="Enter text to summarize here..."
                 className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white"
               />
+              <button
+                onClick={handleTextSubmit}
+                disabled={submitState}
+                className="mt-4 w-full rounded-lg bg-blue-500 p-2 text-white"
+              >
+                {submitState ? 'Summarizing...' : 'Summarize Text'}
+              </button>
             </div>
-            <button
-              onClick={handleTextSubmit}
-              disabled={submitState}
-              className="mt-4 w-full rounded-lg bg-blue-500 p-2 text-white"
-            >
-              {submitState ? 'Summarizing...' : 'Summarize Text'}
-            </button>
           </div>
         </div>
-      </div>
+      )}
 
-      <div className="mt-6">
-        <h4 className="text-lg font-semibold text-black dark:text-white mb-4">Upload Your Input</h4>
-        <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-          <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
-            <h3 className="font-medium text-black dark:text-white">
-              File upload
-            </h3>
-          </div>
-          <div className="flex flex-col gap-5.5 p-6.5">
-            <div>
-              <label className="mb-3 block text-black dark:text-white">
-                Attach file
-              </label>
+      {activeTab === 'video' && (
+        <div className="mt-4">
+          <h4 className="text-lg font-semibold text-black dark:text-white mb-4">Upload Your Video</h4>
+          <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+            <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
+              <h3 className="font-medium text-black dark:text-white">File upload</h3>
+            </div>
+            <div className="flex flex-col gap-5.5 p-6.5">
               <input
                 type="file"
                 accept="video/*"
                 onChange={handleFileChange}
-                className="w-full cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:py-3 file:px-5 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary dark:border-form-strokedark dark:bg-form-input"
+                className="w-full cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent outline-none transition"
               />
             </div>
+            {file && (
+              <div className="mt-3 p-4 bg-gray-100 dark:bg-gray-900 rounded-lg">
+                <p className="text-sm text-gray-700 dark:text-gray-300">
+                  Uploaded {inputType}: <span className="font-medium">{file.name}</span>
+                </p>
+              </div>
+            )}
+            {videoURL && (
+              <video controls className="w-[400px] h-[350px] mx-auto mt-0 rounded-lg">
+                <source src={videoURL} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            )}
           </div>
-        </div>
-        {file && (
-          <div className="mt-3 p-4 bg-gray-100 dark:bg-gray-900 rounded-lg">
-            <p className="text-sm text-gray-700 dark:text-gray-300">
-              Uploaded {inputType}: <span className="font-medium">{file.name}</span>
-            </p>
-          </div>
-        )}
-      </div>
-
-      <div className="mt-6">
-        <form onSubmit={handleSubmit}>
-          <h4 className="text-lg font-semibold text-black dark:text-white mb-4">Video Preview</h4>
-          {videoURL && (
-            <video controls className="w-full rounded-lg">
-              <source src={videoURL} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-          )}
-          <button type="submit" disabled={submitState} className="mt-4 w-full rounded-lg bg-blue-500 p-2 text-white">
+          <button
+            onClick={handleSubmit}
+            disabled={submitState}
+            className="mt-4 w-full rounded-lg bg-blue-500 p-2 text-white"
+          >
             {submitState ? 'Uploading...' : 'Upload Video'}
           </button>
-        </form>
-      </div>
+        </div>
+      )}
 
+      {/* Summary Section */}
       <div className="mt-6">
         <h4 className="text-lg font-semibold text-black dark:text-white mb-4">Summary</h4>
         <div className="p-4 bg-gray-100 dark:bg-gray-900 rounded-lg text-gray-700 dark:text-gray-300">
@@ -174,7 +183,7 @@ const Summary: React.FC = () => {
           {summary}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
