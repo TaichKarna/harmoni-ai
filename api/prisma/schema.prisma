@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  String          @id @default(uuid()) // UUID as primary key
+  username            String          @unique
+  email               String          @unique
+  password            String
+  displayName         String?         // Display name (optional)
+  profilePicture      String?         // Profile picture URL (optional)
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  
+}
+
+// schema.prisma
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model Goal {
+  id          String   @id @default(uuid()) // Use UUID for Goal ID
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  tasks       Task[]   // One-to-many relationship with Task
+
+  @@map("goals")
+}
+
+model Task {
+  id          String   @id @default(uuid()) // Use UUID for Task ID
+  title       String
+  description String?
+  status      String   @default("pending") // Can be "pending", "in-progress", or "completed"
+  priority    Priority @default(MEDIUM)    // Enum for task priority
+  deadline    DateTime?                    // Optional deadline for the task
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  goalId      String   // Foreign key to Goal (now a String)
+  goal        Goal     @relation(fields: [goalId], references: [id]) // Many-to-one relationship with Goal
+  schedules   Schedule[] // One-to-many relationship with Schedule
+
+  @@map("tasks")
+}
+
+model Schedule {
+  id          String   @id @default(uuid()) // Use UUID for Schedule ID
+  taskId      String   // Foreign key to Task (now a String)
+  task        Task     @relation(fields: [taskId], references: [id]) // Many-to-one relationship with Task
+  startTime   DateTime
+  endTime     DateTime
+  isCompleted Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("schedules")
+}
+
