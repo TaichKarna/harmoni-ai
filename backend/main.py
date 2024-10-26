@@ -13,7 +13,7 @@ from pydantic import BaseModel
 
 # Initialize FastAPI app and Cohere client
 app = FastAPI()
-COHERE_API_KEY = "kHTTIU4GaBIXx9iyShxdx3IBZyCH1Y9Fg7OcN7JU"  # Replace with your actual Cohere API key
+COHERE_API_KEY = ""  # Replace with your actual Cohere API key
 cohere_client = cohere.Client(COHERE_API_KEY)
 
 # CORS Configuration
